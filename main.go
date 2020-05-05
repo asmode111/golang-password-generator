@@ -12,19 +12,16 @@ func main() {
 	length := getLength()
 	fmt.Println(length)
 
-	isAlphaNumeric := getIsAlpaNumeric()
+	isAlphaNumeric := getBooleanValue("Do you need alpha numeric character? y(Yes) or n(No): ")
 	fmt.Println(isAlphaNumeric)
 
-	isNumeric := getIsNumeric()
+	isNumeric := getBooleanValue("Do you need numeric character? y(Yes) or n(No): ")
 	fmt.Println(isNumeric)
 }
 
 func getLength() int64 {
-	scanner := bufio.NewScanner(os.Stdin)
 	for {
-		fmt.Print("Enter password length: ")
-		scanner.Scan()
-		length := scanner.Text()
+		length := ask("Enter password length: ")
 		if _, err := strconv.Atoi(length); err == nil {
 			iLength, err := strconv.ParseInt(length, 10, 64)
 			if err != nil {
@@ -36,40 +33,22 @@ func getLength() int64 {
 	}
 }
 
-func getIsAlpaNumeric() bool {
-	scanner := bufio.NewScanner(os.Stdin)
-	isAlphaNumeric := true
+func getBooleanValue(description string) bool {
 	for {
-		fmt.Print("Do you need alpha numeric character? y(Yes) or n(No): ")
-		scanner.Scan()
-		isAlphaNumericGiven := scanner.Text()
-		if isAlphaNumericGiven == "y" {
-			isAlphaNumeric = true
-			break
-		} else if isAlphaNumericGiven == "n" {
-			isAlphaNumeric = false
-			break
+		input := ask(description)
+		if input == "y" {
+			return true
+		}
+
+		if input == "n" {
+			return false
 		}
 	}
-
-	return isAlphaNumeric
 }
 
-func getIsNumeric() bool {
+func ask(question string) string {
 	scanner := bufio.NewScanner(os.Stdin)
-	isNumeric := true
-	for {
-		fmt.Print("Do you need numeric character? y(Yes) or n(No): ")
-		scanner.Scan()
-		isNumericGiven := scanner.Text()
-		if isNumericGiven == "y" {
-			isNumeric = true
-			break
-		} else if isNumericGiven == "n" {
-			isNumeric = false
-			break
-		}
-	}
-
-	return isNumeric
+	fmt.Print(question)
+	scanner.Scan()
+	return scanner.Text()
 }
