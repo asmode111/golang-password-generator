@@ -1,54 +1,32 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
-	"os"
-	"strconv"
+
+	helper "github.com/onurdegerli/golang-password-generator/helpers"
+	model "github.com/onurdegerli/golang-password-generator/models"
+	service "github.com/onurdegerli/golang-password-generator/services"
 )
 
 func main() {
+	passwordLength := helper.GetLength()
+	containsAlphanumeric := helper.GetBooleanValue("Do you want any alpha numeric characters? y(Yes) or n(No): ")
+	containsNumeric := helper.GetBooleanValue("Do you want any numeric characters? y(Yes) or n(No): ")
+	containsLowercase := helper.GetBooleanValue("Do you want any lowercase characters? y(Yes) or n(No): ")
+	containsUppercase := helper.GetBooleanValue("Do you want any uppercase characters? y(Yes) or n(No): ")
 
-	length := getLength()
-	fmt.Println(length)
-
-	isAlphaNumeric := getBooleanValue("Do you need alpha numeric character? y(Yes) or n(No): ")
-	fmt.Println(isAlphaNumeric)
-
-	isNumeric := getBooleanValue("Do you need numeric character? y(Yes) or n(No): ")
-	fmt.Println(isNumeric)
-}
-
-func getLength() int64 {
-	for {
-		length := ask("Enter password length: ")
-		if _, err := strconv.Atoi(length); err == nil {
-			iLength, err := strconv.ParseInt(length, 10, 64)
-			if err != nil {
-				fmt.Println(err)
-			} else {
-				return iLength
-			}
-		}
+	option := model.Option{
+		PasswordLength:       passwordLength,
+		ContainsAlphanumeric: containsAlphanumeric,
+		ContainsNumeric:      containsNumeric,
+		ContainsLowercase:    containsLowercase,
+		ContainsUppercase:    containsUppercase,
 	}
-}
 
-func getBooleanValue(description string) bool {
-	for {
-		input := ask(description)
-		if input == "y" {
-			return true
-		}
-
-		if input == "n" {
-			return false
-		}
+	password, err := service.Generate(option)
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Printf("Your unique password is %s\n", password)
 	}
-}
-
-func ask(question string) string {
-	scanner := bufio.NewScanner(os.Stdin)
-	fmt.Print(question)
-	scanner.Scan()
-	return scanner.Text()
 }
